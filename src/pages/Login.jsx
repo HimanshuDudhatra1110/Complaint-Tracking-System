@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import { LogIn } from "lucide-react";
+import { LogIn, Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +21,12 @@ const Login = () => {
 
     try {
       await login(formData.email, formData.password);
-      navigate("/");
+
+      if (user?.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       setError("Invalid email or password");
     } finally {
@@ -29,7 +35,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center">
+    <div className="min-h-[80vh] flex items-center justify-center pt-16">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <div className="flex items-center justify-center mb-8">
           <LogIn className="h-8 w-8 text-indigo-600" />
@@ -58,12 +64,12 @@ const Login = () => {
             />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label className="block text-gray-700 text-sm font-medium mb-2">
               Password
             </label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
               value={formData.password}
               onChange={(e) =>
@@ -71,6 +77,16 @@ const Login = () => {
               }
               required
             />
+            <div
+              className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer mt-7"
+              onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5 text-gray-500" />
+              ) : (
+                <Eye className="h-5 w-5 text-gray-500" />
+              )}
+            </div>
           </div>
 
           <button

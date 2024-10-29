@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { Navigate } from "react-router-dom";
 
 const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Get the API base URL from the environment variable
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -25,7 +27,12 @@ export const AuthProvider = ({ children }) => {
         })
         .catch(() => {
           localStorage.removeItem("token");
+        })
+        .finally(() => {
+          setLoading(false);
         });
+    } else {
+      setLoading(false); // No token, end loading immediately
     }
   }, [apiUrl]);
 
@@ -66,10 +73,11 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
+    <Navigate to="/login" />;
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

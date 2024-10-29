@@ -1,16 +1,16 @@
-import express from 'express';
-import Complaint from '../models/Complaint.js';
-import { auth, adminOnly } from '../middleware/auth.js';
+import express from "express";
+import Complaint from "../models/Complaint.js";
+import { auth, adminOnly } from "../middleware/auth.js";
 
 const router = express.Router();
 
 // Get all complaints (with filters)
-router.get('/', auth, async (req, res) => {
+router.get("/", auth, async (req, res) => {
   try {
     const { status, category, priority } = req.query;
     const filter = {};
 
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== "admin") {
       filter.submittedBy = req.user._id;
     }
     if (status) filter.status = status;
@@ -18,22 +18,22 @@ router.get('/', auth, async (req, res) => {
     if (priority) filter.priority = priority;
 
     const complaints = await Complaint.find(filter)
-      .populate('submittedBy', 'name email')
-      .populate('assignedTo', 'name email')
+      .populate("submittedBy", "name email")
+      .populate("assignedTo", "name email")
       .sort({ createdAt: -1 });
 
-    res.json(complaints);
+    res.status(200).json(complaints);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
 // Create new complaint
-router.post('/', auth, async (req, res) => {
+router.post("/", auth, async (req, res) => {
   try {
     const complaint = new Complaint({
       ...req.body,
-      submittedBy: req.user._id
+      submittedBy: req.user._id,
     });
     await complaint.save();
     res.status(201).json(complaint);
@@ -43,7 +43,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 // Update complaint status (admin only)
-router.patch('/:id/status', auth, adminOnly, async (req, res) => {
+router.patch("/:id/status", auth, adminOnly, async (req, res) => {
   try {
     const { status } = req.body;
     const complaint = await Complaint.findByIdAndUpdate(
@@ -58,12 +58,12 @@ router.patch('/:id/status', auth, adminOnly, async (req, res) => {
 });
 
 // Add comment to complaint
-router.post('/:id/comments', auth, async (req, res) => {
+router.post("/:id/comments", auth, async (req, res) => {
   try {
     const complaint = await Complaint.findById(req.params.id);
     complaint.comments.push({
       text: req.body.text,
-      user: req.user._id
+      user: req.user._id,
     });
     await complaint.save();
     res.status(201).json(complaint);

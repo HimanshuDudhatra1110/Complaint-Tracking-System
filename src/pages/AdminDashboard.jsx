@@ -22,7 +22,7 @@ const AdminDashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md hidden md:block">
+      <aside className="w-64 bg-white shadow-md hidden fixed top-20 md:block h-screen">
         <nav className="p-4 space-y-2">
           {navItems.map(({ path, icon: Icon, label, exact }) => (
             <Link
@@ -60,7 +60,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Main content */}
-      <main className="flex-1 p-6 pb-20 md:pb-6">
+      <main className="flex-1 ml-64 mt-8 p-6 pb-20 md:pb-6">
         <Outlet />
       </main>
     </div>

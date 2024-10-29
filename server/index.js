@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
 import complaintRoutes from "./routes/complaints.js";
 import seedRoutes from "./routes/seed.js";
+import analyticsRoutes from "./routes/analytics.js";
+import userRoutes from "./routes/users.js";
 
 dotenv.config();
 
@@ -34,7 +36,9 @@ mongoose
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/complaints", complaintRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/seed", seedRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // Home route
 app.get("/", (req, res) => {

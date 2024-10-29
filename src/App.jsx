@@ -6,6 +6,11 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NewComplaint from "./pages/NewComplaint";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import AdminAnalytics from "./pages/AdminAnalytics.jsx";
+import AdminRoute from "./components/AdminRoutes/AdminRoute.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
+import AdminOverview from "./pages/AdminOverview.jsx";
+import AdminUsers from "./pages/AdminUsers.jsx";
 
 function App() {
   return (
@@ -19,6 +24,13 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/new-complaint" element={<NewComplaint />} />
+              <Route element={<AdminRoute />}>
+                <Route path="/admin" element={<AdminDashboard />}>
+                  <Route index element={<AdminOverview />} />
+                  <Route path="users" element={<AdminUsers />} />
+                  <Route path="analytics" element={<AdminAnalytics />} />
+                </Route>
+              </Route>
             </Routes>
           </main>
         </div>

@@ -1,12 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AlertTriangle, Database, Trash2 } from "lucide-react";
-import StatsOverview from "../components/admin/StatsOverview";
-import RecentComplaints from "../components/admin/RecentComplaints";
+// import StatsOverview from "../components/admin/StatsOverview";
+// import RecentComplaints from "../components/admin/RecentComplaints";
 import axios from "axios";
+import { set } from "mongoose";
+import AdminDashboard from "../components/AdminDashboard";
 
 const AdminOverview = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [complaints, setComplaints] = useState([]);
+
+  const fetchComplaints = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/complaints`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setComplaints(response.data);
+      setError("");
+    } catch (error) {
+      setError("Failed to fetch complaints");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchComplaints();
+  }, []);
 
   const handleSeedData = async (type) => {
     // Removed type annotation
@@ -63,6 +89,7 @@ const AdminOverview = () => {
 
   return (
     <div className="space-y-6">
+      <AdminDashboard complaints={complaints} onDataSeeded={fetchComplaints} />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Overview</h1>
@@ -108,8 +135,8 @@ const AdminOverview = () => {
         </div>
       )}
 
-      <StatsOverview />
-      <RecentComplaints />
+      {/* <StatsOverview /> */}
+      {/* <RecentComplaints /> */}
     </div>
   );
 };

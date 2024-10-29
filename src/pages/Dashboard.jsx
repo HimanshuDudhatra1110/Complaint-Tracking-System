@@ -1,21 +1,29 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext.jsx";
 import ComplaintList from "../components/ComplaintList.jsx";
 import ComplaintFilters from "../components/ComplaintFilters.jsx";
-import AdminDashboard from "../components/AdminDashboard.jsx";
 import { AlertCircle } from "lucide-react";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  const { user } = useAuth();
   const [complaints, setComplaints] = useState([]);
   const [filters, setFilters] = useState({
     status: "",
     category: "",
     priority: "",
   });
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  if (!user) {
+    navigate("/login");
+  }
+  if (user && user.role === "admin") {
+    navigate("/admin");
+  }
 
   useEffect(() => {
     fetchComplaints();
@@ -53,35 +61,23 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {user?.role === "admin" ? (
-        <AdminDashboard
-          complaints={complaints}
-          onDataSeeded={fetchComplaints}
-        />
-      ) : (
-        <>
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">My Complaints</h1>
-            <p className="mt-2 text-gray-600">
-              Track and manage your complaints in one place
-            </p>
-          </div>
+    <div className="max-w-7xl mx-auto pt-16">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">My Complaints</h1>
+        <p className="mt-2 text-gray-600">
+          Track and manage your complaints in one place
+        </p>
+      </div>
 
-          {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md flex items-center text-red-700">
-              <AlertCircle className="h-5 w-5 mr-2" />
-              {error}
-            </div>
-          )}
-
-          <ComplaintFilters filters={filters} setFilters={setFilters} />
-          <ComplaintList
-            complaints={complaints}
-            onStatusChange={fetchComplaints}
-          />
-        </>
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md flex items-center text-red-700">
+          <AlertCircle className="h-5 w-5 mr-2" />
+          {error}
+        </div>
       )}
+
+      <ComplaintFilters filters={filters} setFilters={setFilters} />
+      <ComplaintList complaints={complaints} onStatusChange={fetchComplaints} />
     </div>
   );
 };

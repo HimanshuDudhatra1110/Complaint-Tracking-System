@@ -10,17 +10,10 @@ import {
   XCircle,
   Database,
 } from "lucide-react";
-import ComplaintList from "./ComplaintList";
-import ComplaintFilters from "./ComplaintFilters";
 
 const AdminDashboard = ({ complaints, onDataSeeded }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [filters, setFilters] = useState({
-    status: "",
-    category: "",
-    priority: "",
-  });
 
   const stats = {
     total: complaints.length,
@@ -246,9 +239,6 @@ const AdminDashboard = ({ complaints, onDataSeeded }) => {
           </div>
         </div>
       </div>
-
-      <ComplaintFilters filters={filters} setFilters={setFilters} />
-      <ComplaintList complaints={complaints} />
     </div>
   );
 };

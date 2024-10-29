@@ -7,7 +7,7 @@ const Navbar = () => {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="bg-indigo-600 text-white shadow-lg">
+    <nav className="bg-indigo-600 text-white shadow-lg fixed top-0 w-full z-10">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
