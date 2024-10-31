@@ -11,6 +11,9 @@ import AdminRoute from "./components/AdminRoutes/AdminRoute.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import AdminOverview from "./pages/AdminOverview.jsx";
 import AdminUsers from "./pages/AdminUsers.jsx";
+import CreateUserPage from "./pages/CreateUserPage.jsx";
+import AdminSettings from "./pages/AdminSettings.jsx";
+import ChangePassword from "./pages/ChangePassword.jsx";
 
 function App() {
   return (
@@ -24,11 +27,14 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/new-complaint" element={<NewComplaint />} />
+              <Route path="/change-password" element={<ChangePassword />} />
               <Route element={<AdminRoute />}>
                 <Route path="/admin" element={<AdminDashboard />}>
                   <Route index element={<AdminOverview />} />
                   <Route path="users" element={<AdminUsers />} />
+                  <Route path="users/create" element={<CreateUserPage />} />
                   <Route path="analytics" element={<AdminAnalytics />} />
+                  <Route path="settings" element={<AdminSettings />} />
                 </Route>
               </Route>
             </Routes>

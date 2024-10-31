@@ -10,6 +10,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -23,24 +24,52 @@ const AdminUsers = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalUsers, setTotalUsers] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers();
   }, [page, limit, sortConfig]);
 
+  // const fetchUsers = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await axios.get(
+  //       `${import.meta.env.VITE_API_URL}/users?page=${page}&limit=${limit}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //         },
+  //       }
+  //     );
+  //     setUsers(response.data);
+  //     setTotalUsers(response.data.length);
+  //     setError("");
+  //   } catch (err) {
+  //     setError("Failed to fetch users");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const fetchUsers = async () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/users?page=${page}&limit=${limit}`,
+        `${import.meta.env.VITE_API_URL}/users`,
         {
+          params: {
+            page,
+            limit,
+            sortField: sortConfig.field,
+            sortOrder: sortConfig.direction,
+          },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
-      setUsers(response.data);
-      setTotalUsers(response.data.length);
+      setUsers(response.data.users);
+      setTotalUsers(response.data.totalUsers);
       setError("");
     } catch (err) {
       setError("Failed to fetch users");
@@ -64,8 +93,13 @@ const AdminUsers = () => {
     if (page > 1) setPage(page - 1);
   };
 
+  // const handleNextPage = () => {
+  //   if (users.length === limit) setPage(page + 1);
+  // };
   const handleNextPage = () => {
-    if (users.length === limit) setPage(page + 1);
+    if (page * limit < totalUsers) {
+      setPage(page + 1);
+    }
   };
 
   if (loading) {
@@ -78,9 +112,19 @@ const AdminUsers = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-        <p className="text-gray-600">View and manage all users in the system</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+          <p className="text-gray-600">
+            View and manage all users in the system
+          </p>
+        </div>
+        <button
+          onClick={() => navigate("/admin/users/create")}
+          className="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-indigo-900"
+        >
+          Add User
+        </button>
       </div>
 
       {error && (

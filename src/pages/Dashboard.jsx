@@ -5,6 +5,7 @@ import { AlertCircle } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
+import ConfirmationModal from "../components/ConfirmationModal.jsx";
 
 const Dashboard = () => {
   const [complaints, setComplaints] = useState([]);
@@ -16,14 +17,18 @@ const Dashboard = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedComplaintId, setSelectedComplaintId] = useState(null);
   const navigate = useNavigate();
 
-  if (!user) {
-    navigate("/login");
-  }
-  if (user && user.role === "admin") {
-    navigate("/admin");
-  }
+  useEffect(() => {
+    if (loading) return; // Prevent navigation until loading is complete
+    if (!user) {
+      navigate("/login");
+    } else if (user.role === "admin") {
+      navigate("/admin");
+    }
+  }, [user, navigate, loading]);
 
   useEffect(() => {
     fetchComplaints();
@@ -40,15 +45,40 @@ const Dashboard = () => {
           },
         }
       );
-
-      console.log("response", response);
-
       setComplaints(response.data);
       setError("");
     } catch (err) {
       setError("Failed to fetch complaints");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteClick = (id) => {
+    setSelectedComplaintId(id);
+    setModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/complaints/${selectedComplaintId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      // Update the complaints state to remove the deleted complaint
+      setComplaints(
+        complaints.filter((complaint) => complaint._id !== selectedComplaintId)
+      );
+      // Close the modal
+      setModalOpen(false);
+    } catch (err) {
+      console.error("Error deleting complaint:", err);
+      setError("Failed to delete complaint");
+      setModalOpen(false);
     }
   };
 
@@ -77,7 +107,16 @@ const Dashboard = () => {
       )}
 
       <ComplaintFilters filters={filters} setFilters={setFilters} />
-      <ComplaintList complaints={complaints} onStatusChange={fetchComplaints} />
+      <ComplaintList
+        complaints={complaints}
+        onStatusChange={fetchComplaints}
+        onDelete={handleDeleteClick} // Pass the handleDelete function to ComplaintList
+      />
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 };

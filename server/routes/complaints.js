@@ -1,6 +1,7 @@
 import express from "express";
 import Complaint from "../models/Complaint.js";
 import { auth, adminOnly } from "../middleware/auth.js";
+import { check, validationResult } from "express-validator";
 
 const router = express.Router();
 
@@ -29,15 +30,52 @@ router.get("/", auth, async (req, res) => {
 });
 
 // Create new complaint
-router.post("/", auth, async (req, res) => {
+router.post(
+  "/",
+  auth,
+  [
+    check("title").notEmpty().withMessage("Title is required"),
+    check("description").notEmpty().withMessage("Description is required"),
+    check("category").notEmpty().withMessage("Category is required"),
+    check("priority").notEmpty().withMessage("Priority is required"),
+  ],
+  async (req, res) => {
+    // check for validation error
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: errors.array()[0].msg });
+    }
+    try {
+      const complaint = new Complaint({
+        ...req.body,
+        submittedBy: req.user._id,
+      });
+      await complaint.save();
+      res.status(201).json(complaint);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+);
+
+// Delete complaint by user only those who created it
+router.delete("/:id", auth, async (req, res) => {
   try {
-    const complaint = new Complaint({
-      ...req.body,
-      submittedBy: req.user._id,
-    });
-    await complaint.save();
-    res.status(201).json(complaint);
+    const complaint = await Complaint.findById(req.params.id);
+
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+    if (complaint.submittedBy.toString() !== req.user._id.toString()) {
+      return res
+        .status(401)
+        .json({ message: "You are not authorized to delete this complaint" });
+    }
+    // now we can delete the complaint
+    await Complaint.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Complaint deleted successfully" });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ message: error.message });
   }
 });

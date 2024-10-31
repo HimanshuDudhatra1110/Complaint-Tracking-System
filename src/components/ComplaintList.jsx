@@ -1,6 +1,11 @@
 import React from "react";
-import { Clock, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
-import axios from "axios";
+import {
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  Trash2,
+} from "lucide-react";
 
 const statusIcons = {
   Pending: Clock,
@@ -16,27 +21,7 @@ const statusColors = {
   Rejected: "text-red-500",
 };
 
-const ComplaintList = ({ complaints, onStatusChange }) => {
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      const response = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/complaints/${id}/status`,
-        { status: newStatus },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      if (response.status !== 200) throw new Error("Failed to update status");
-      onStatusChange(); // Refresh or notify after status change
-    } catch (error) {
-      console.error("Error updating status:", error);
-    }
-  };
-
+const ComplaintList = ({ complaints, onDelete }) => {
   return (
     <div className="mt-6 bg-white shadow-sm rounded-lg divide-y divide-gray-200">
       {complaints.map((complaint) => {
@@ -45,8 +30,14 @@ const ComplaintList = ({ complaints, onStatusChange }) => {
           <div key={complaint._id} className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h3 className="text-lg font-medium text-gray-900">
+                <h3 className="text-lg font-medium text-gray-900 flex justify-between items-center">
                   {complaint.title}
+                  <button
+                    onClick={() => onDelete(complaint._id)} // Call onDelete with complaint ID
+                    className="text-red-500 hover:text-red-700 ml-4"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
                 </h3>
                 <div className="mt-1 flex items-center space-x-2 text-sm text-gray-500">
                   <span>{complaint.category}</span>

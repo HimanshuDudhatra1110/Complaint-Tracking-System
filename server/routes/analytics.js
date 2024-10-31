@@ -87,7 +87,10 @@ router.get("/", async (req, res) => {
 
     const delayByCategory = await Complaint.aggregate([
       {
-        $match: { createdAt: { $gte: dateFrom }, status: { $ne: "Resolved" } },
+        $match: {
+          createdAt: { $gte: dateFrom },
+          status: { $nin: ["Resolved", "Rejected"] },
+        },
       },
       {
         $addFields: {
