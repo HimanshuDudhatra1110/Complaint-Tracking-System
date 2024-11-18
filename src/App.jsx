@@ -14,6 +14,7 @@ import AdminUsers from "./pages/AdminUsers.jsx";
 import CreateUserPage from "./pages/CreateUserPage.jsx";
 import AdminSettings from "./pages/AdminSettings.jsx";
 import ChangePassword from "./pages/ChangePassword.jsx";
+import AdminComplaints from "./pages/AdminComplaints.jsx";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
               <Route element={<AdminRoute />}>
                 <Route path="/admin" element={<AdminDashboard />}>
                   <Route index element={<AdminOverview />} />
+                  <Route path="complaints" element={<AdminComplaints />} />
                   <Route path="users" element={<AdminUsers />} />
                   <Route path="users/create" element={<CreateUserPage />} />
                   <Route path="analytics" element={<AdminAnalytics />} />

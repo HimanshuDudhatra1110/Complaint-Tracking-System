@@ -29,6 +29,35 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
+// get all complaints for admin
+router.get("/admin", auth, adminOnly, async (req, res) => {
+  try {
+    const { status, category, priority } = req.query;
+    const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1; // default to 1 if not provided or invalid
+    let limit = parseInt(req.query.limit) || 10;
+    limit = limit > 100 ? 100 : limit; // set max limit to 100
+    const skip = (page - 1) * limit;
+
+    const filter = {};
+    if (status) filter.status = status;
+    if (category) filter.category = category;
+    if (priority) filter.priority = priority;
+
+    const totalComplaints = await Complaint.countDocuments(filter);
+
+    const complaints = await Complaint.find(filter)
+      .populate("submittedBy", "name email")
+      .populate("assignedTo", "name email")
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ complaints, totalComplaints });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Create new complaint
 router.post(
   "/",

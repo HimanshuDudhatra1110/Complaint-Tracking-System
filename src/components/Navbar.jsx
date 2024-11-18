@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { MessageSquare, LogOut, User, ChevronDown } from "lucide-react";
+import {
+  MessageSquare,
+  LogOut,
+  User,
+  ChevronDown,
+  LockKeyhole,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 
 const Navbar = () => {
@@ -63,6 +69,7 @@ const Navbar = () => {
                         to="/change-password"
                         className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                       >
+                        <LockKeyhole className="h-4 w-4 inline-block me-2" />
                         Change Password
                       </Link>
                       <hr className="my-1 border-gray-200" />
@@ -70,6 +77,7 @@ const Navbar = () => {
                         onClick={logout}
                         className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                       >
+                        <LogOut className="h-4 w-4 inline-block me-2" />
                         Logout
                       </button>
                     </div>

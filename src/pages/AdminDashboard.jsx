@@ -1,12 +1,23 @@
 import React from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, BarChart2, Settings } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  BarChart2,
+  Settings,
+  MessageCircleWarning,
+} from "lucide-react";
 
 const AdminDashboard = () => {
   const location = useLocation();
 
   const navItems = [
     { path: "/admin", icon: LayoutDashboard, label: "Overview", exact: true },
+    {
+      path: "/admin/complaints",
+      icon: MessageCircleWarning,
+      label: "Complaints",
+    },
     { path: "/admin/users", icon: Users, label: "Users" },
     { path: "/admin/analytics", icon: BarChart2, label: "Analytics" },
     { path: "/admin/settings", icon: Settings, label: "Settings" },

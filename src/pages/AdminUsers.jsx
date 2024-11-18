@@ -90,15 +90,14 @@ const AdminUsers = () => {
   };
 
   const handlePreviousPage = () => {
-    if (page > 1) setPage(page - 1);
+    if (page > 1) {
+      setPage((prev) => prev - 1);
+    }
   };
 
-  // const handleNextPage = () => {
-  //   if (users.length === limit) setPage(page + 1);
-  // };
   const handleNextPage = () => {
     if (page * limit < totalUsers) {
-      setPage(page + 1);
+      setPage((prev) => prev + 1);
     }
   };
 
